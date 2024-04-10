@@ -1,0 +1,292 @@
+PROGRAM
+
+REM Turn drives on
+DRIVE ON X               
+DRIVE ON Y               
+DRIVE ON Z              
+
+ACC 7 DEC 5 VEL 8
+
+_MAIN
+REM Block #1
+GOSUB PICKUPBIG
+GOSUB ROTATEBLOCK
+X20.4 Z20                  : REM Bring to first block drop location
+INH -516
+VEL 2                      : REM Slow down
+Z23.35
+INH -516
+STP 0
+Y7.2                       : REM Lower
+INH -516
+CLR 34                     : REM Release
+Y6
+INH -516
+VEL 8                      : REM Speed up
+Y3
+INH -516
+
+REM Block #2
+GOSUB PICKUPBIG
+GOSUB ROTATEBLOCK
+X20.6 Z17.45               : REM Go to second drop location
+INH -516
+VEL 2                      : REM Slow down
+Z20.45
+INH -516
+STP 0
+Y7.2                       : REM Drop
+INH -516
+CLR 34                     : REM Release
+Y6
+INH -516
+VEL 8                      : REM Speed up
+Y3
+INH -516
+
+
+REM Block #3
+GOSUB PICKUPSMALL
+Z22                       
+INH -516 
+X21.6                      : REM Go to third location 
+INH -516
+STP 0
+Y8                         : REM Lower
+INH -516
+VEL 2                      : REM Slow down
+Y13
+INH -516
+CLR 34                     : REM Release
+INH -516
+Y10
+INH -516
+VEL 8                      : REM Speed up
+Y3
+INH -516
+
+REM Block #4
+GOSUB PICKUPSMALL
+Z22
+INH -516
+X18.4                      : REM Go to fourth block location
+INH -516
+Y10
+INH-516
+VEL 2                      : REM Slow Down
+Y13
+INH -516
+CLR 34                     : REM Release
+INH -516
+Y10
+INH -516
+VEL 8                      : REM Speed up
+Y3
+INH -516
+
+REM Block #5
+GOSUB PICKUPBIG
+GOSUB ROTATEBLOCK
+Y0
+INH -516
+SET 32                      : REM Rotate
+X20.6 Z22.3                 : REM Go to block location five
+INH -516
+VEL 2                       : REM Slow down
+INH -516                    
+Y4
+INH -516
+CLR 34                      : REM Release
+Y0
+INH -516
+VEL 8
+
+
+REM Block #6
+GOSUB PICKUPSMALL
+Y0
+INH -516
+Z22.2
+INH -516
+X15
+INH -516
+VEL 3
+X20.20                       : REM Go to final block location
+INH -516
+VEL 2
+STP 0
+Y7
+INH -516
+VEL 1                        : REM Slow down
+Y9.25
+INH -516
+CLR 34                       : REM Release
+DWL 1
+Y6
+INH -516
+Y7
+INH -516
+SET 34                       : REM Grip entire block
+DWL 1                        : REM Wait 1 second
+Y5
+INH-516
+VEL 4
+
+REM Bring to QC
+Y3
+INH -516
+VEL 6
+X15.9 Z45.5                  : REM Move to QC location
+INH -516
+VEL 2
+INH -516
+Y7.5                         : REM Lower
+INH -516
+CLR 34                       : REM Release
+DWL 0.5
+INH -516
+Y5                           : REM Raise
+INH -516
+
+REM Move away
+VEL 6
+X23
+Y0
+INH -516
+Z20
+INH -516
+
+REM Accept or reject assembly
+DWL 20                       : REM Wait for QC
+Z45.5
+INH -516
+X15.9                        : REM Go back to pick up assembly
+INH -516
+Y7.3
+INH -516
+SET 34                       : REM Grab block
+DWL 1
+Y0
+INH -516
+Z20
+INH -516
+
+REM Check if assembly is accepted then bring to dropoff
+REM BAD
+IF (BIT 13 or BIT 14)
+X28
+INH -516
+Z0
+INH -516
+CLR 34
+DWL 0.5
+REM GOOD
+ELSE
+X1
+INH -516
+Z45
+Y7.5
+INH -516
+CLR 34
+DWL 0.5
+Y0
+ENDIF
+
+GOTO MAIN
+X0 Y0 Z0
+
+CLR 34
+
+END
+
+REM -------------------------------------
+
+_PICKUPBIG
+STP 10
+SET 32
+Y5 X-2 Z1.6                   : REM Go to big location
+INH -516
+WHILE(NOT BIT12)
+DWL 1
+WEND
+Y18                            
+INH -516
+VEL 2                         : REM Slow
+STP 0
+Y22.7                         : REM Lower
+INH -516
+SET 34                        : REM Close
+INH -516
+Y20
+INH -516
+VEL 8                         : REM Speed up
+Y5
+INH -516
+STP 10
+RETURN
+
+REM -------------------------------------
+
+_PICKUPSMALL
+SET 32
+STP 10
+Y5 X-0.9 Z13.9                : REM Go to small location
+INH -516
+WHILE(BIT15)
+DWL 1
+WEND
+STP 0
+Y18
+INH -516
+VEL 2                         : REM Slow
+Y22                           : REM Lower
+INH -516
+SET 34                        : REM GRAB
+DWL 0.7
+INH -516
+Y20
+INH -516
+VEL 8
+
+Y4
+INH -516
+STP 10
+RETURN
+
+REM -------------------------------------
+
+_ROTATEBLOCK
+X22 Y5 Z7.9
+INH -516
+STP 0
+Y10
+INH -516
+VEL 2
+Y14.5
+
+INH -516
+
+CLR 34
+Y5
+
+INH -516
+
+CLR 32
+X20.6
+Z7.85
+
+INH -516
+Y7.5
+
+INH -516
+
+SET 34
+Y5
+INH -516
+VEL 8
+STP 10
+RETURN
+
+
+ENDP
+
